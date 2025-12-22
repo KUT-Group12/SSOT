@@ -48,32 +48,31 @@ docker compose up --build
 
 ### Step 1: モジュール基本情報を追加
 
-`ssot-app/src/data/modules.ts` の `moduleBaseData` 配列に追加:
+担当ロールのファイルを編集:
+
+| ロール | ファイル |
+|--------|---------|
+| 共通 | `ssot-app/src/data/definitions/common.ts` |
+| 一般会員 | `ssot-app/src/data/definitions/user.ts` |
+| 事業者会員 | `ssot-app/src/data/definitions/business.ts` |
+| 管理者 | `ssot-app/src/data/definitions/admin.ts` |
 
 ```typescript
 {
-  id: 'user_payment',           // ユニークなID
-  role: 'user',                 // 'user' | 'business' | 'admin'
-  name: '決済',                  // 表示名
-  description: '決済処理を行う',   // 説明
-  endpoint: {
-    method: 'POST',
-    path: '/api/payments'
+  id: 'user_payment',
+  role: 'user',
+  name: '決済',
+  description: '決済処理を行う',
+  endpoint: { method: 'POST', path: '/api/payments' },
+  request: {
+    amount: 'number',
+    method: 'string',
   },
-  schema: {
-    request: `{
-  "amount": "number",
-  "method": "string"
-}`,
-    response: `{
-  "transactionId": "string",
-  "status": "string"
-}`
+  response: {
+    transactionId: 'string',
+    status: 'string',
   },
-  rules: [                      // オプション
-    '金額は1円以上',
-    'クレジットカードは3Dセキュア必須'
-  ]
+  rules: ['金額は1円以上'],
 }
 ```
 
@@ -85,7 +84,6 @@ docker compose up --build
 export const userFlow = `
   # 既存のフロー
   user_login -> user_dashboard
-  user_dashboard -> user_profile
   user_dashboard -> user_orders
 
   # 新しい遷移を追加
@@ -119,8 +117,13 @@ ssot-app/
     │   │   └── FlowViewer.tsx          # React Flowラッパー
     │   └── ui/                         # shadcn/uiコンポーネント
     ├── data/
+    │   ├── definitions/                # ← モジュール定義
+    │   │   ├── common.ts               # 共通モジュール
+    │   │   ├── user.ts                 # 一般会員モジュール
+    │   │   ├── business.ts             # 事業者会員モジュール
+    │   │   └── admin.ts                # 管理者モジュール
     │   ├── flows.ts                    # フロー定義（DOT風記法）
-    │   └── modules.ts                  # モジュールデータ
+    │   └── modules.ts                  # 統合（編集不要）
     ├── lib/
     │   ├── flowParser.ts               # DOT風記法パーサー
     │   └── utils.ts                    # ユーティリティ
