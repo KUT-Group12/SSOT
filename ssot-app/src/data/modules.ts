@@ -22,7 +22,7 @@ import {
   ModuleBaseData
 } from './definitions/index';
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // フロー定義をパース
 // ---------------------------------------------------------------------------
 const parsedFlows: FlowMap = mergeFlows(
@@ -46,6 +46,11 @@ function convertToModuleData(base: ModuleBaseData): ModuleData {
     name: base.name,
     description: base.description,
     endpoint: base.endpoint,
+    endpoints: base.endpoints?.map(ep => ({
+      ...ep,
+      response: ep.response,
+    })),
+    relatedApi: base.relatedApi,
     schema: {
       request: formatSchema(base.request),
       response: formatSchema(base.response),
