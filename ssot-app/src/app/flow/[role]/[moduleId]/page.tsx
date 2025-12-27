@@ -78,12 +78,20 @@ export default async function ModuleDetailPage({ params }: PageProps) {
                         {module.relatedApi && (() => {
                             const relatedModule = getModuleById(module.relatedApi);
                             if (!relatedModule) return null;
+
+                            // 特定エンドポイントを参照している場合
+                            const specificEndpoint = module.relatedEndpoint && relatedModule.endpoints
+                                ? relatedModule.endpoints.find(ep => ep.path === module.relatedEndpoint)
+                                : null;
+
                             return (
                                 <Card className="bg-gray-800 border-gray-700 border-l-4 border-l-blue-500">
                                     <CardHeader>
                                         <CardTitle className="text-white">参照API</CardTitle>
                                         <CardDescription className="text-gray-400">
-                                            このモジュールは以下のAPIを使用します
+                                            {specificEndpoint
+                                                ? `${relatedModule.name} の特定エンドポイントを参照`
+                                                : 'このモジュールは以下のAPIを使用します'}
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -95,7 +103,34 @@ export default async function ModuleDetailPage({ params }: PageProps) {
                                                 </Button>
                                             </Link>
                                         </div>
-                                        {relatedModule.endpoint && (
+
+                                        {/* 特定エンドポイントの場合 */}
+                                        {specificEndpoint && (
+                                            <>
+                                                <div className="bg-gray-900 rounded-lg p-4 font-mono">
+                                                    <span className={`font-bold ${specificEndpoint.method === 'GET' ? 'text-green-400' :
+                                                            specificEndpoint.method === 'POST' ? 'text-blue-400' :
+                                                                specificEndpoint.method === 'PUT' ? 'text-yellow-400' :
+                                                                    'text-red-400'
+                                                        }`}>
+                                                        {specificEndpoint.method}
+                                                    </span>
+                                                    {' '}
+                                                    <span className="text-gray-300">{specificEndpoint.path}</span>
+                                                </div>
+                                                {specificEndpoint.response && (
+                                                    <div>
+                                                        <p className="text-xs text-gray-500 mb-1">Response</p>
+                                                        <pre className="bg-gray-900 rounded-lg p-3 text-xs text-gray-300 overflow-x-auto">
+                                                            {JSON.stringify(specificEndpoint.response, null, 2)}
+                                                        </pre>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* 単一endpoint（specificEndpointでない場合） */}
+                                        {!specificEndpoint && relatedModule.endpoint && (
                                             <div className="bg-gray-900 rounded-lg p-4 font-mono">
                                                 <span className={`font-bold ${relatedModule.endpoint.method === 'GET' ? 'text-green-400' :
                                                         relatedModule.endpoint.method === 'POST' ? 'text-blue-400' :
@@ -108,7 +143,7 @@ export default async function ModuleDetailPage({ params }: PageProps) {
                                                 <span className="text-gray-300">{relatedModule.endpoint.path}</span>
                                             </div>
                                         )}
-                                        {relatedModule.schema?.response && (
+                                        {!specificEndpoint && relatedModule.schema?.response && (
                                             <div>
                                                 <p className="text-xs text-gray-500 mb-1">Response</p>
                                                 <pre className="bg-gray-900 rounded-lg p-3 text-xs text-gray-300 overflow-x-auto">

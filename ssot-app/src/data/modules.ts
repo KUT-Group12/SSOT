@@ -51,6 +51,7 @@ function convertToModuleData(base: ModuleBaseData): ModuleData {
       response: ep.response,
     })),
     relatedApi: base.relatedApi,
+    relatedEndpoint: base.relatedEndpoint,
     schema: {
       request: formatSchema(base.request),
       response: formatSchema(base.response),

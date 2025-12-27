@@ -20,7 +20,8 @@ export interface ModuleData {
   response?: Record<string, unknown>;
 
   // API参照（バックエンドモジュール用）
-  relatedApi?: string;    // 参照するAPIモジュールのID
+  relatedApi?: string;           // 参照するAPIモジュールのID
+  relatedEndpoint?: string;      // 特定エンドポイントのpath（endpoints配列内）
 
   // React Flow logic
   nextModuleIds: string[]; // IDs of modules this module connects TO

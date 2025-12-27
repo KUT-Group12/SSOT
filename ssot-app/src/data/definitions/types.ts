@@ -22,6 +22,7 @@ export interface ModuleBaseData {
     }>;
     request?: Record<string, unknown>;
     response?: Record<string, unknown>;
-    relatedApi?: string;  // API参照（バックエンドモジュール用）
+    relatedApi?: string;           // API参照（バックエンドモジュール用）
+    relatedEndpoint?: string;      // 特定エンドポイントのpath
     rules?: string[];
 }
