@@ -9,6 +9,20 @@ export interface ModuleData {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
   };
+  endpoints?: Array<{
+    name: string;
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    path: string;
+    response?: Record<string, unknown>;
+  }>;
+
+  request?: Record<string, unknown>;
+  response?: Record<string, unknown>;
+
+  // API参照（バックエンドモジュール用）
+  relatedApi?: string;           // 参照するAPIモジュールのID
+  relatedEndpoint?: string;      // 特定エンドポイントのpath（endpoints配列内）
+
   // React Flow logic
   nextModuleIds: string[]; // IDs of modules this module connects TO
 
