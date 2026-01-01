@@ -39,9 +39,11 @@ export const businessModules: ModuleBaseData[] = [
             "sessionId": "string"
         },
         rules: [
-            'Google認証に成功した場合のみセッションIDを発行する',
-            '未認証の場合はエラーを返す'
-        ],
+            'Google OAuth 2.0 を使用する',
+            '認証成功時のみセッションIDを発行する',
+            'MFA認証完了を必須とする',
+            '認証に失敗した場合はセッションIDを発行しない',
+        ]
     },
 
     {
@@ -52,12 +54,6 @@ export const businessModules: ModuleBaseData[] = [
         response: {
             "googleId": "string"
         },
-        rules: [
-            'ユーザがマイページボタンを選択した事実のみを業務イベントとして扱う',
-            '本モジュールでは画面遷移処理は行わない',
-            'ページ遷移は別モジュールに委譲する',
-            '認証状態の判定やユーザ情報の取得は行わない'
-        ],
     },
 
     {
@@ -79,10 +75,10 @@ export const businessModules: ModuleBaseData[] = [
             iconImageUrl: 'string'
         },
         rules: [
+            'ログイン済みかつ本人のGoogle IDのみ指定可能とする',
             '入力されたGoogle IDをもとに事業者会員情報を取得する',
             '存在しないGoogle IDが指定された場合はエラーを返す',
-            '取得できるのは事業者会員として登録されている情報のみとする',
-        ],
+        ]
     },
 
     {
@@ -96,10 +92,6 @@ export const businessModules: ModuleBaseData[] = [
             registDate: 'string',
             profieImage: 'string'
         },
-        rules: [
-            '入力として受け取った事業者会員情報をもとにマイページ画面を表示する',
-            '表示形式やレイアウトの詳細はUI設計に従う'
-        ],
     },
 
     {
@@ -115,12 +107,12 @@ export const businessModules: ModuleBaseData[] = [
             googleId: 'string'
         },
         rules: [
+            '管理権限を持つ事業者本人のみ実行可能とする',
             '入力されたGoogle IDに紐づく会員情報を匿名化する',
-            '匿名化処理では識別可能な個人情報を無効な値に置き換える',
-            '匿名化後もシステム上の参照整合性は保持する',
-            '存在しないGoogle IDが指定された場合はエラーを返す',
-            '本モジュールでは物理削除は行わない'
-        ],
+            '識別可能な個人情報は復元不能な値に置き換える',
+            '匿名化後も参照整合性は保持する',
+            '物理削除は行わない'
+        ]
     },
 
     {
@@ -132,9 +124,9 @@ export const businessModules: ModuleBaseData[] = [
             newBusinessName: 'string'
         },
         rules: [
-            'ユーザが変更後の事業者名を入力する操作のみを扱う',
-            '本モジュールでは入力値の永続化や更新処理は行わない',
-        ],
+            '入力可能な文字数は1文字以上50文字以下とする',
+            '使用禁止文字（制御文字，絵文字など）はエラーとする'
+        ]
     },
 
     {
@@ -152,6 +144,9 @@ export const businessModules: ModuleBaseData[] = [
         rules: [
             '事業者名の更新は永続ストレージに反映する',
             '空文字や不正な形式の事業者名はエラーとする',
+            'ログイン済みかつ本人のみ更新可能とする',
+            '事業者名は1文字以上50文字以下とする',
+            '不正な形式の事業者名はエラーとする'
         ],
     },
 
@@ -195,6 +190,9 @@ export const businessModules: ModuleBaseData[] = [
         },
         rules: [
             '画像データは永続ストレージに保存する',
+            '画像形式は PNG または JPEG のみ許可する',
+            '画像サイズは5MB以下とする',
+            'ログイン済みかつ本人のみ更新可能とする',
             '対応していない画像形式の場合はエラーを返す',
         ],
     },
@@ -226,7 +224,10 @@ export const businessModules: ModuleBaseData[] = [
         },
         rules: [
             'Stripeと連携してリダイレクト用URLを生成する',
-            'Stripe連携に失敗した場合はエラーを返す'
+            'Stripe連携に失敗した場合はエラーを返す',
+            'ログイン済みかつ有効な事業者会員のみ実行可能とする',
+            'Stripe顧客情報が未作成の場合は事前に作成する',
+            '外部連携失敗時はURLを返却しない'
         ],
     },
 
