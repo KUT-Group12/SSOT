@@ -14,7 +14,15 @@ export interface ModuleBaseData {
         method: 'GET' | 'POST' | 'PUT' | 'DELETE';
         path: string;
     };
+    endpoints?: Array<{
+        name: string;
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+        path: string;
+        response?: Record<string, unknown>;
+    }>;
     request?: Record<string, unknown>;
     response?: Record<string, unknown>;
+    relatedApi?: string;           // API参照（バックエンドモジュール用）
+    relatedEndpoint?: string;      // 特定エンドポイントのpath
     rules?: string[];
 }
