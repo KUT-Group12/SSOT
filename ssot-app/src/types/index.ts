@@ -6,12 +6,12 @@ export interface ModuleData {
   name: string;           // Display Name (e.g., 'ログイン')
   description: string;
   endpoint?: {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    method: string;
     path: string;
   };
   endpoints?: Array<{
     name: string;
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    method: string;
     path: string;
     response?: Record<string, unknown>;
   }>;
