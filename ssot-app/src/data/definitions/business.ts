@@ -14,7 +14,7 @@ export const businessModules: ModuleBaseData[] = [
     //     description: '事業者会員のログイン処理',
     //     endpoint: { method: 'POST', path: '/api/auth/business/login' },
     //     request: {
-    //         email: 'string',
+    //         gmail: 'string',
     //         password: 'string',
     //     },
     //     response: {
@@ -40,7 +40,6 @@ export const businessModules: ModuleBaseData[] = [
         },
         rules: [
             'Google OAuth 2.0 を使用する',
-            '認証成功時のみセッションIDを発行する',
             'MFA認証完了を必須とする',
             '認証に失敗した場合はセッションIDを発行しない',
         ]
@@ -70,7 +69,7 @@ export const businessModules: ModuleBaseData[] = [
         },
         response: {
             businessName: 'string',
-            email: 'string',
+            gmail: 'string',
             registeredAt: 'string',
             iconImageUrl: 'string'
         },
@@ -353,6 +352,544 @@ export const businessModules: ModuleBaseData[] = [
                 }
             ]
         },
-    }
+    },
+
+    {
+        id: 'M1-1',
+        role: 'business',
+        name: 'ログイン',
+        description: '事業者のログイン画面の表示',
+        endpoint: {
+            method: 'POST',
+            path: 'api/auth/business/login',
+        },
+        request: {
+            gmail: 'string',
+            mfaCode: 'string',
+        },
+        response: {
+            token: 'string',
+            business: {
+                id: 'string',
+                role: 'string',
+            },
+        },
+        rules: [
+            'MFA必須',
+            'パスワードは12文字以上必須',
+        ],
+    },
+
+    {
+        id: 'M1-2',                                        // モジュールID
+        role: 'business',
+        name: '会員情報取得',                              // 名称
+        description: '会員情報を取得する',                 // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/business/member'
+        },
+        request: {
+            googleId: 'string'
+        },
+        response: {
+            gmail: 'string',
+            role: 'string'
+        },
+        rules: [
+            'Google ID に紐づく会員情報のみを取得する',
+            '該当する会員情報が存在しない場合はエラーを返す',
+            'roleは"user/business/admin"のどれかのみとする'
+        ],
+    },
+
+    {
+            id: 'M1-3-1',
+            role: 'business',
+            name: 'ログアウトの選択',
+            description: 'Webページでログアウトボタンをクリックする',
+            endpoint: {
+                method: 'POST',
+                path: '/auth/logout'
+            },
+            response: {
+                'status' : 'logged_out',
+            }
+    },
+
+    {
+        id: 'M1-3-2',                                  // モジュールID
+        role: 'business',
+        name: 'ログアウト画面表示',                    // 名称
+        description: 'ログアウト画面を表示する',       // 概要
+        request: {
+            gmail: 'string',
+            role: 'string'
+        },
+        rules: [
+            'roleは"user/business/admin"のどれかのみとする'
+        ],
+    },
+
+    {
+        id: 'M1-3-3',                                      // モジュールID
+        role: 'business',
+        name: 'ログアウト',                                // 名称
+        description: 'ログイン中のセッションを無効化する', // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/auth/logout'
+        },
+        response: {
+            expiredSessionId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-4-1',                                      // モジュールID
+        role: 'business',
+        name: '退会選択',                                  // 名称
+        description: '退会操作を選択する',                 // 概要
+        response: {
+            googleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-4-2',                                  // モジュールID
+        role: 'business',
+        name: '退会画面表示',                          // 名称
+        description: '退会確認画面を表示する',         // 概要
+        request: {
+            gmail: 'string',
+            role: 'string'
+        },
+        rules: [
+            'roleは"user/business/admin"のどれかのみとする'
+        ],
+    },
+
+    {
+        id: 'M1-4-3',                                      // モジュールID
+        role: 'business',
+        name: '退会処理',                                  // 名称
+        description: '会員の退会処理を実行する',           // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/member/withdrawal'
+        },
+        request: {
+            googleId: 'string'
+        },
+        rules: [
+            '退会後は同一の Google ID で新規登録が可能な状態とする'
+        ],
+    },
+
+    {
+        id: 'M1-5-1',                                  // モジュールID
+        role: 'business',
+        name: '問い合わせ画面表示',                    // 名称
+        description: '問い合わせ画面を表示する',       // 概要
+    },
+
+    {
+        id: 'M1-5-2',                                  // モジュールID
+        role: 'business',
+        name: '問い合わせ入力',                        // 名称
+        description: '問い合わせ内容を入力して送信する', // 概要
+        response: {
+            subject: 'string',
+            message: 'string'
+        },
+    },
+
+    {
+        id: 'M1-5-3',                                   // モジュールID
+        role: 'business',
+        name: '問い合わせ送信',                         // 名称
+        description: '問い合わせ内容を保存する',        // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/contact'
+        },
+        request: {
+            subject: 'string',
+            message: 'string'
+        },
+    },
+
+    {
+        id: 'M1-6-1',                               // モジュールID
+        role: 'business',
+        name: '投稿一覧取得',                      // 名称
+        description: '投稿内容の一覧を取得する',  // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/business/posts'
+        },
+        response: {
+            postIds: 'string[]'
+        }
+    },
+
+    {
+        id: 'M1-6-2',                                       // モジュールID
+        role: 'business',
+        name: '投稿数判定',                                 // 名称
+        description: '投稿数が50件以上かを判定する',        // 概要
+        request: {
+            postIds: 'string[]'
+        },
+        response: {
+            isLargePin: 'boolean'
+        },
+        rules: [
+            '投稿数が50件以上の場合は true を返す',
+            '投稿数が50件未満の場合は false を返す'
+        ],
+    },
+
+    {
+        id: 'M1-6-3',                                       // モジュールID
+        role: 'business',
+        name: '地図表示画面',                               // 名称
+        description: '地図表示画面を表示する',              // 概要
+        request: {
+            isLargePin: 'boolean'
+        },
+        rules: [
+            'isLargePin が true の場合は大きいピンを表示する',
+            'isLargePin が false の場合は小さいピンを表示する'
+        ],
+    },
+
+    {
+        id: 'M1-7-1',                                  // モジュールID
+        role: 'business',
+        name: 'ピン選択',                              // 名称
+        description: '地図上のピンを選択する',         // 概要
+        response: {
+            postId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-7-2',                                   // モジュールID
+        role: 'business',
+        name: '投稿詳細取得',                           // 名称
+        description: '指定された投稿の詳細情報を取得する', // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/posts/{postId}'
+        },
+        request: {
+            postId: 'string'
+        },
+        response: {
+            postId: 'string',
+            locationId: 'string',
+            genreId: 'string',
+            title: 'string',
+            viewCount: 'number',
+            reactionCount: 'number',
+            authorId: 'string',
+            postedAt: 'string',
+            description: 'string',
+            images: 'string[]'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時文字列で返す'
+        ],
+    },
+
+    {
+        id: 'M1-7-3',                                   // モジュールID
+        role: 'business',
+        name: '投稿閲覧画面表示',                       // 名称
+        description: '投稿内容の閲覧画面を表示する',     // 概要
+        request: {
+            postId: 'string',
+            locationId: 'string',
+            genreId: 'string',
+            title: 'string',
+            viewCount: 'number',
+            reactionCount: 'number',
+            authorId: 'string',
+            postedAt: 'string',
+            description: 'string',
+            images: 'string[]'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時文字列で返す'
+        ],
+    },
+
+    {
+        id: 'M1-8-1',                                   // モジュールID
+        role: 'business',
+        name: '位置情報取得',                           // 名称
+        description: '現在の位置情報を取得する',         // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/location'
+        },
+        response: {
+            latitude: 'number',
+            longitude: 'number'
+        },
+        rules: [
+            '緯度および経度は WGS84 座標系で返す'
+        ],
+    },
+
+    {
+        id: 'M1-8-2',                                   // モジュールID
+        role: 'business',
+        name: '新規投稿画面表示',                       // 名称
+        description: '新規投稿用の入力画面を表示する',   // 概要
+        request: {
+            latitude: 'number',
+            longitude: 'number'
+        },
+        response: {
+            title: 'string',
+            locationId: 'string',
+            genreId: 'string',
+            description: 'string',
+            images: 'string[]',
+            postedAt: 'string',
+            authorId: 'string'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時文字列で返す',
+        ],
+    },
+
+    {
+        id: 'M1-8-3',                                   // モジュールID
+        role: 'business',
+        name: '投稿日時取得',                           // 名称
+        description: '指定された投稿の投稿日時を取得する', // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/posts/{postId}/timestamp'
+        },
+        request: {
+            postId: 'string'
+        },
+        response: {
+            postedAt: 'string'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時文字列で返す'
+        ],
+    },
+
+    {
+        id: 'M1-8-4',                                   // モジュールID
+        role: 'business',
+        name: '投稿内容格納',                           // 名称
+        description: '新規投稿の内容を保存する',        // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/posts'
+        },
+        request: {
+            locationId: 'string',
+            genreId: 'string',
+            title: 'string',
+            viewCount: 'number',
+            reactionCount: 'number',
+            authorId: 'string',
+            postedAt: 'string',
+            description: 'string',
+            images: 'string[]'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時文字列とする',
+        ],
+    },
+
+    {
+        id: 'M1-9-1',                                      // モジュールID
+        role: 'business',
+        name: 'ブロック選択',                              // 名称
+        description: 'ブロック対象のユーザーを選択する',  // 概要
+        response: {
+            blockedGoogleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-9-2',                                     // モジュールID
+        role: 'business',
+        name: 'ブロック登録',                             // 名称
+        description: 'ブロックしたユーザー情報を登録する', // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/block'
+        },
+        request: {
+            blockedGoogleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-10-1',                                      // モジュールID
+        role: 'business',
+        name: 'ブロック解除選択',                          // 名称
+        description: 'ブロック解除対象のユーザーを選択する', // 概要
+        response: {
+            blockedGoogleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-10-2',                                      // モジュールID
+        role: 'business',
+        name: 'ブロック解除',                              // 名称
+        description: 'ブロック情報を削除する',              // 概要
+        endpoint: {
+            method: 'DELETE',
+            path: '/api/block'
+        },
+        request: {
+            blockedGoogleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-12-1',                                      // モジュールID
+        role: 'business',
+        name: '通報画面表示',                               // 名称
+        description: '通報画面を表示する',                   // 概要
+        response: {
+            reportedGoogleId: 'string',
+            targetPostId: 'string',
+            reportReason: 'string',
+            reportedAt: 'string'
+        },
+        rules: [
+            'reportedAt は ISO 8601 形式の日時とする'
+        ],
+    },
+
+    {
+        id: 'M1-12-2',                                      // モジュールID
+        role: 'business',
+        name: '通報登録',                                  // 名称
+        description: '通報内容を格納する',                  // 概要
+        endpoint: {
+            method: 'POST',
+            path: '/api/report'
+        },
+        request: {
+            reportedGoogleId: 'string',
+            targetPostId: 'string',
+            reportReason: 'string',
+            reportedAt: 'string'
+        },
+        rules: [
+            'reportedAt は ISO 8601 形式の日時とする',
+        ],
+    },
+
+    {
+        id: 'M1-13-1',                                      // モジュールID
+        role: 'business',
+        name: '投稿削除選択',                               // 名称
+        description: '削除対象の投稿を選択する',             // 概要
+        response: {
+            postId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-13-2',                                      // モジュールID
+        role: 'business',
+        name: '投稿匿名化',                                 // 名称
+        description: '投稿内容を匿名化する',                 // 概要
+        endpoint: {
+            method: 'PUT',
+            path: '/api/posts/anonymize'
+        },
+        request: {
+            postId: 'string'
+        },
+        rules: [
+            '投稿データは物理削除せず論理的に匿名化する'
+        ],
+    },
+
+    {
+        id: 'M1-14-1',                                      // モジュールID
+        role: 'business',
+        name: '投稿履歴選択',                               // 名称
+        description: '自分の投稿履歴を表示するために選択する', // 概要
+        response: {
+            googleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-14-2',                                      // モジュールID
+        role: 'business',
+        name: '投稿履歴取得',                               // 名称
+        description: '自分の投稿一覧を取得する',             // 概要
+        endpoint: {
+            method: 'GET',
+            path: '/api/posts/history'
+        },
+        request: {
+            googleId: 'string'
+        },
+        response: {
+            postId: 'string',
+            genreId: 'string',
+            title: 'string',
+            reactionCount: 'number',
+            postedAt: 'string',
+            description: 'string'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時とする'
+        ],
+    },
+
+    {
+        id: 'M1-14-3',                                      // モジュールID
+        role: 'business',
+        name: '投稿履歴表示',                               // 名称
+        description: '自分の投稿履歴を表示する',             // 概要
+        request: {
+            postId: 'string',
+            genreId: 'string',
+            title: 'string',
+            reactionCount: 'number',
+            postedAt: 'string',
+            description: 'string'
+        },
+        rules: [
+            'postedAt は ISO 8601 形式の日時とする'
+        ],
+    },
+
+    {
+        id: 'M1-15-1',                                      // モジュールID
+        role: 'business',
+        name: '設定選択',                                   // 名称
+        description: 'ユーザー設定画面を表示するために選択する', // 概要
+        response: {
+            googleId: 'string'
+        },
+    },
+
+    {
+        id: 'M1-15-2',                                      // モジュールID
+        role: 'business',
+        name: '設定表示',                                   // 名称
+        description: 'ユーザー設定画面を表示する',           // 概要
+    },
 
 ];
