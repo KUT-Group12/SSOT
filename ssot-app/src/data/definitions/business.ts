@@ -74,9 +74,9 @@ export const businessModules: ModuleBaseData[] = [
             iconImageUrl: 'string'
         },
         rules: [
-            'ログイン済みかつ本人のGoogle IDのみ指定可能とする',
-            '入力されたGoogle IDをもとに事業者会員情報を取得する',
             '存在しないGoogle IDが指定された場合はエラーを返す',
+            'エラー時は HTTP ステータスコードと errorCode，message を返却する',
+            'レスポンス形式は { errorCode: string, message: string }'
         ]
     },
 
@@ -106,10 +106,8 @@ export const businessModules: ModuleBaseData[] = [
             googleId: 'string'
         },
         rules: [
-            '管理権限を持つ事業者本人のみ実行可能とする',
-            '入力されたGoogle IDに紐づく会員情報を匿名化する',
             '識別可能な個人情報は復元不能な値に置き換える',
-            '匿名化後も参照整合性は保持する',
+            '主キーおよび外部キーは変更しない',
             '物理削除は行わない'
         ]
     },
@@ -157,9 +155,6 @@ export const businessModules: ModuleBaseData[] = [
         request: {
             newBusinessName: 'string'
         },
-        rules: [
-            '表示結果はUIの状態としてのみ扱う'
-        ],
     },
 
     {
@@ -226,7 +221,9 @@ export const businessModules: ModuleBaseData[] = [
             'Stripe連携に失敗した場合はエラーを返す',
             'ログイン済みかつ有効な事業者会員のみ実行可能とする',
             'Stripe顧客情報が未作成の場合は事前に作成する',
-            '外部連携失敗時はURLを返却しない'
+            '外部連携失敗時はURLを返却しない',
+            'エラー時は HTTP ステータスコードと errorCode，message を返却する',
+            'レスポンス形式は { errorCode: string, message: string }'
         ],
     },
 
@@ -312,6 +309,7 @@ export const businessModules: ModuleBaseData[] = [
             'エンゲージメント率は「総リアクション数 ÷ 総閲覧数」に基づいて計算する',
             '総閲覧数が0の場合はエンゲージメント率を0として返却する',
             '対象となる事業者会員が存在しない場合はエラーを返す',
+            '小数点第3位で四捨五入する'
         ],
     },
 
@@ -352,6 +350,9 @@ export const businessModules: ModuleBaseData[] = [
                 }
             ]
         },
+        rules: [
+            'reactionNumber の降順で上位5件を抽出する',
+        ],
     },
 
     {
@@ -399,7 +400,9 @@ export const businessModules: ModuleBaseData[] = [
         rules: [
             'Google ID に紐づく会員情報のみを取得する',
             '該当する会員情報が存在しない場合はエラーを返す',
-            'roleは"user/business/admin"のどれかのみとする'
+            'roleは"user/business/admin"のどれかのみとする',
+            'エラー時は HTTP ステータスコードと errorCode，message を返却する',
+            'レスポンス形式は { errorCode: string, message: string }'
         ],
     },
 
@@ -599,7 +602,8 @@ export const businessModules: ModuleBaseData[] = [
             images: 'string[]'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時文字列で返す'
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -621,7 +625,8 @@ export const businessModules: ModuleBaseData[] = [
             images: 'string[]'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時文字列で返す'
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -662,7 +667,8 @@ export const businessModules: ModuleBaseData[] = [
             authorId: 'string'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時文字列で返す',
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -682,7 +688,8 @@ export const businessModules: ModuleBaseData[] = [
             postedAt: 'string'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時文字列で返す'
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -707,7 +714,8 @@ export const businessModules: ModuleBaseData[] = [
             images: 'string[]'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時文字列とする',
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -771,7 +779,8 @@ export const businessModules: ModuleBaseData[] = [
             reportedAt: 'string'
         },
         rules: [
-            'reportedAt は ISO 8601 形式の日時とする'
+            'reportedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -791,7 +800,8 @@ export const businessModules: ModuleBaseData[] = [
             reportedAt: 'string'
         },
         rules: [
-            'reportedAt は ISO 8601 形式の日時とする',
+            'reportedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -853,7 +863,8 @@ export const businessModules: ModuleBaseData[] = [
             description: 'string'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時とする'
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
@@ -871,7 +882,8 @@ export const businessModules: ModuleBaseData[] = [
             description: 'string'
         },
         rules: [
-            'postedAt は ISO 8601 形式の日時とする'
+            'postedAt は日本標準時（JST, UTC+9）の日時とする',
+            'フォーマットは ISO 8601 形式（YYYY-MM-DDTHH:mm）とする',
         ],
     },
 
