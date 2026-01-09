@@ -31,11 +31,72 @@ export const businessFlow = `
 // 管理者フロー
 export const adminFlow = `
   # ログイン認証フロー
-  admin_login -> admin_dashboard
-  
+  LoginScreen -> AdminInputInformation
+  AdminInputInformation -> AdminGetTotalUserNumber
+  AdminInputInformation -> AdminGetActiveUserNumber
+  AdminInputInformation -> AdminGetTotalPostNumber
+  AdminInputInformation -> AdminGetTotalReactionNumber
+  AdminInputInformation -> AdminGetBusinessAccountNumber
+  AdminInputInformation -> AdminGetNotReportNumber
+
+  # ダッシュボードへの遷移
+  AdminDashboardGraphScreen -> AdminIntegration
+  ProcessReportScreen -> AdminIntegration
+  AdminUpdateUserListUI -> AdminIntegration
+  ProcessBusinessRequestScreen -> AdminIntegration
+  ProcessContactScreen -> AdminIntegration
+
+
+
+  # ダッシュボードまでのロジック
+  AdminGetTotalUserNumber -> AdminIntegration
+  AdminGetActiveUserNumber -> AdminIntegration
+  AdminGetTotalPostNumber -> AdminIntegration
+  AdminGetTotalReactionNumber -> AdminIntegration
+  AdminGetBusinessAccountNumber -> AdminIntegration
+  AdminGetNotReportNumber -> AdminIntegration
+  AdminIntegration -> AdminDashboardScreen
+
   # ダッシュボードからの遷移
-  admin_dashboard -> admin_users
-  admin_dashboard -> admin_businesses
+  AdminDashboardScreen -> AdminGetReportDetails
+  AdminDashboardScreen -> AdminGetBusinessApplications
+  AdminDashboardScreen -> AdminGetContactMessages
+  AdminDashboardScreen -> AdminGetUserDetails
+
+  # 通報画面の表示
+  AdminGetReportDetails -> AdminDisplayReportManagement
+  AdminDisplayReportManagement -> ProcessReportScreen
+
+  # 事業者申請画面の表示
+  AdminGetBusinessApplications -> AdminDisplayBusinessApplicationList
+  AdminDisplayBusinessApplicationList -> AdminDeleteApplicationData
+  AdminDeleteApplicationData -> ProcessBusinessRequestScreen
+
+  # ユーザー管理画面の表示
+  AdminGetUserDetails -> AdminDisplayUserManagement
+  AdminDisplayUserManagement -> AdminSelectUserDeletion
+  AdminSelectUserDeletion -> AdminDeleteAccount
+  AdminDeleteAccount -> SendUserMessage
+  SendUserMessage -> AdminUpdateUserListUI
+  AdminUpdateUserListUI -> AdminUpdateUserListUI
+
+
+  # お問い合わせ画面の表示
+  AdminGetContactMessages -> AdminDisplayContactManagement
+  AdminDisplayContactManagement -> ProcessContact
+  ProcessContact -> ProcessContactScreen
+
+  #ログアウトまでの遷移
+  AdminDashboardGraphScreen -> AdminSelectLogout
+  ProcessReportScreen -> AdminSelectLogout
+  AdminUpdateUserListUI -> AdminSelectLogout
+  ProcessBusinessRequestScreen -> AdminSelectLogout
+  ProcessContactScreen -> AdminSelectLogout
+
+
+  #ログアウト処理
+  AdminSelectLogout -> AdminLogout
+  AdminLogout -> LoginScreen
 `;
 
 // 全フロー定義をエクスポート
