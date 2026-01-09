@@ -2,7 +2,6 @@
  * モジュール統合・エクスポート
  * 
  * モジュール定義の編集は各ロールファイルで行ってください:
- * - definitions/common.ts   : 共通
  * - definitions/user.ts     : 一般会員
  * - definitions/business.ts : 事業者会員
  * - definitions/admin.ts    : 管理者
@@ -15,7 +14,6 @@ import { ModuleData } from '@/types';
 import { parseFlow, mergeFlows, FlowMap } from '@/lib/flowParser';
 import { userFlow, businessFlow, adminFlow } from './flows';
 import {
-  commonModules,
   userModules,
   businessModules,
   adminModules,
@@ -59,7 +57,6 @@ function convertToModuleData(base: ModuleBaseData): ModuleData {
 // 全モジュールを統合
 // ---------------------------------------------------------------------------
 const allModuleBaseData: ModuleBaseData[] = [
-  ...commonModules,
   ...userModules,
   ...businessModules,
   ...adminModules,

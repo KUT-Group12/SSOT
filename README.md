@@ -52,7 +52,6 @@ docker compose up --build
 
 | ロール | ファイル |
 |--------|---------|
-| 共通 | `ssot-app/src/data/definitions/common.ts` |
 | 一般会員 | `ssot-app/src/data/definitions/user.ts` |
 | 事業者会員 | `ssot-app/src/data/definitions/business.ts` |
 | 管理者 | `ssot-app/src/data/definitions/admin.ts` |
@@ -118,7 +117,6 @@ ssot-app/
     │   └── ui/                         # shadcn/uiコンポーネント
     ├── data/
     │   ├── definitions/                # ← モジュール定義
-    │   │   ├── common.ts               # 共通モジュール
     │   │   ├── user.ts                 # 一般会員モジュール
     │   │   ├── business.ts             # 事業者会員モジュール
     │   │   └── admin.ts                # 管理者モジュール
