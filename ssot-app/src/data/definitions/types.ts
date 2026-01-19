@@ -18,6 +18,7 @@ export interface ModuleBaseData {
         name: string;
         method: 'GET' | 'POST' | 'PUT' | 'DELETE';
         path: string;
+        request?: Record<string, unknown>;
         response?: Record<string, unknown>;
     }>;
     request?: Record<string, unknown>;
