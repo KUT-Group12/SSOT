@@ -10,6 +10,7 @@ import { ModuleBaseData } from './types';
 import { count } from 'console';
 
 
+
 export const adminModules: ModuleBaseData[] = [
     {
         id: 'LoginScreen',
@@ -39,7 +40,7 @@ export const adminModules: ModuleBaseData[] = [
         role: 'admin',
         name: 'Google認証にアクセスしてログイン',
         description: 'Google認証にアクセスしてログイン',
-        endpoint: {method: 'GET', path: ''},
+        endpoint: { method: 'GET', path: '' },
         request: {},
         response: {},
     },
@@ -47,15 +48,15 @@ export const adminModules: ModuleBaseData[] = [
         id: 'AdminDashboardScreen',
         role: 'admin',
         name: '概要画面',
-        description : '概要画面の表示',
-        endpoint: {method: 'GET', path: '/api/admin/summary'},
+        description: '概要画面の表示',
+        endpoint: { method: 'GET', path: '/api/admin/summary' },
         response: {
-            'totalUserCount' : 'int',
-            'activeUserCount' : 'int',
-            'totalPostCount' : 'int',
-            'totalReactionCount' : 'int',
-            'businessAccountCount' : 'int',
-            'unprocessedReportCount' : 'int',
+            'totalUserCount': 'int',
+            'activeUserCount': 'int',
+            'totalPostCount': 'int',
+            'totalReactionCount': 'int',
+            'businessAccountCount': 'int',
+            'unprocessedReportCount': 'int',
         }
     },
     {
@@ -150,6 +151,7 @@ export const adminModules: ModuleBaseData[] = [
             activeUserCount: 'int',
             totalPostCount: 'int',
             totalReactionCount: 'int',
+            businessAccountCount: 'int',
             unprocessedReportCount: 'int',
         },
         relatedApi: 'AdminDashboardScreen'
@@ -164,16 +166,16 @@ export const adminModules: ModuleBaseData[] = [
                 name: '通報内容の取得',
                 method: 'GET',
                 path: '/api/reports',
-                    response: {
-                    'items': [
+                response: {
+                    items: [
                         {
-                        reportId: 'int',
-                        reporterGoogleId: 'varchar',
-                        targetPostId: 'int',
-                        reason: 'text',
-                        reportedAt: 'ISO8601',
-                        handled: 'boolean',
-                        deleted: 'boolean'
+                            reportId: 'int',
+                            reporterGoogleId: 'string',
+                            targetPostId: 'int',
+                            reason: 'string',
+                            reportedAt: 'ISO8601',
+                            handled: 'boolean',
+                            deleted: 'boolean'
                         }
                     ],
                     total: 'int',
@@ -183,11 +185,15 @@ export const adminModules: ModuleBaseData[] = [
             },
             {
                 name: '通報を処理済みにする',
-                method : 'PUT',
-                path: '/reports/{id}/handle',
-                response : {
+                method: 'PUT',
+                path: '/api/reports/{id}/handle',
+                request: {
+                    handled: 'boolean',
+                    adminNote: 'string',
+                },
+                response: {
                     reportId: 'int',
-                    handled: 'bool',
+                    handled: 'boolean',
                     handledAt: 'ISO8601'
                 }
             }
@@ -196,7 +202,7 @@ export const adminModules: ModuleBaseData[] = [
             'queryとして，以下のものをもつこと．',
             '?page=1&pageSize=20&handled=false',
             '例として，以下のようなリクエストをフロント側がおくる．',
-            '/api/admin/reports?page=1&pageSize=20&handled=false'
+            '/api/reports?page=1&pageSize=20&handled=false'
         ]
     },
     {
@@ -241,46 +247,56 @@ export const adminModules: ModuleBaseData[] = [
             {
                 name: '申請の表示',
                 method: 'GET',
-                path: '/api/admin/request',
+                path: '/api/admin/applications',
                 response: {
-                    'items': [
+                    items: [
                         {
-                        'requestId': 'int',
-                        'name': 'varchar',
-                        'address': 'varchar',
-                        'phone': 'varchar',
-                        'userId': 'varchar',
+                            applicationId: 'int',
+                            name: 'string',
+                            address: 'string',
+                            phone: 'string',
+                            userId: 'string',
+                            status: 'string',
+                            createdAt: 'ISO8601',
                         }
                     ],
-                    'total': 'int',
-                    'page': 'int',
-                    'pageSize': 'int',
+                    total: 'int',
+                    page: 'int',
+                    pageSize: 'int',
                 }
             },
             {
                 name: '申請の承認',
                 method: 'PUT',
-                path: '/api/applications/{id}/approve',
-                response:{
-                    'requestId': 'int',
-                    'status': 'approved',
-                    'approvedAt': 'ISO8601'
+                path: '/api/admin/applications/{id}/approve',
+                request: {
+                    adminNote: 'string',
+                },
+                response: {
+                    applicationId: 'int',
+                    status: 'string',
+                    approvedAt: 'ISO8601'
                 }
             },
             {
                 name: '申請の却下',
                 method: 'PUT',
-                path: '/api/applications/{id}/reject',
+                path: '/api/admin/applications/{id}/reject',
+                request: {
+                    reason: 'string',
+                },
                 response: {
-                    'requestId' : 'int',
-                    'status' : 'rejected',
-                    'rejectedAt': 'ISO8601'
+                    applicationId: 'int',
+                    status: 'string',
+                    reason: 'string',
+                    rejectedAt: 'ISO8601'
                 }
             }
         ],
         rules: [
+            'statusは "pending" | "approved" | "rejected" のいずれか',
             'approvedAt, rejectedAtに関しては，日時フォーマットのISO8601に準ずること．',
-            'queryとして，page/pageSize/handledを使用する．'
+            'queryとして，page/pageSize/statusを使用する．'
         ]
     },
     {
@@ -294,7 +310,7 @@ export const adminModules: ModuleBaseData[] = [
         id: 'AdminDeleteApplicationData',
         role: 'admin',
         name: '申請情報の匿名化',
-        description : '確認した申請情報を匿名化処理を施す',
+        description: '確認した申請情報を匿名化処理を施す',
         relatedApi: '',
     },
     {
@@ -315,20 +331,23 @@ export const adminModules: ModuleBaseData[] = [
         role: 'admin',
         name: 'ユーザー画面を表示',
         description: 'ユーザーを一覧で表示する',
-        endpoint: {method: 'GET', path: '/api/users'},
+        endpoint: { method: 'GET', path: '/api/admin/users' },
         response: {
-            'items': [
+            items: [
                 {
-                    'googleId': 'varchar(50)',
-                    'gmail': 'varchar(100)',
-                    'role': 'string',
-                    'registrationDate': 'ISO8601',
+                    googleId: 'string',
+                    gmail: 'string',
+                    role: 'string',
+                    registrationDate: 'ISO8601',
                 }
-            ]
+            ],
+            total: 'int',
+            page: 'int',
+            pageSize: 'int',
         },
         rules: [
             'queryとして，page/pageSizeを用いる．',
-            'roleには，admin/business/userのみ',
+            'roleは "admin" | "business" | "user" のいずれか',
             '登録日時に関してはISO8601で統一'
         ]
     },
@@ -337,8 +356,14 @@ export const adminModules: ModuleBaseData[] = [
         role: 'admin',
         name: 'ユーザー一覧から削除ボタンを選択',
         description: 'ユーザーを削除する',
-        endpoint: {method:'POST', path: '/internal/users/{userId}'},
-        response: {}
+        endpoint: { method: 'DELETE', path: '/api/admin/users/{userId}' },
+        request: {
+            reason: 'string',
+        },
+        response: {
+            success: 'boolean',
+            deletedAt: 'ISO8601',
+        }
     },
     {
         id: 'AdminDeleteAccount',
@@ -366,48 +391,46 @@ export const adminModules: ModuleBaseData[] = [
         name: 'お問い合わせ情報の取得',
         description: 'お問い合わせ情報の全てを取得する',
         relatedApi: 'AdminDisplayContactManagement',
-        relatedEndpoint: '/internal/asks'
+        relatedEndpoint: '/api/admin/contacts'
     },
     {
         id: 'AdminDisplayContactManagement',
-        role : 'admin',
+        role: 'admin',
         name: 'お問い合わせ画面の表示',
         description: 'お問い合わせ画面をWeb側に表示する',
         endpoints: [
             {
-                name: 'お問い合わせ画面を表示する',
-                method: 'GET' ,
-                path: '/internal/asks',
+                name: 'お問い合わせ一覧を取得する',
+                method: 'GET',
+                path: '/api/admin/contacts',
                 response: {
-                    'items': [
+                    items: [
                         {
-                        'askId': 'int',
-                        'date': 'ISO8601',
-                        'subject': 'varchar(50)',
-                        'text': 'text',
-                        'userId': 'int',
-                        'askFlag': 'bool',
+                            contactId: 'int',
+                            date: 'ISO8601',
+                            subject: 'string',
+                            text: 'string',
+                            userId: 'string',
+                            handled: 'boolean',
                         }
                     ],
-                    'total': 'int',
-                    'page': 'int',
-                    'pageSize': '20',
+                    total: 'int',
+                    page: 'int',
+                    pageSize: 'int',
                 }
             },
             {
-                name: '承認',
-                method: 'POST',
-                path: '/internal/requests/{requestId}/approve',
+                name: '対応済みにする',
+                method: 'PUT',
+                path: '/api/admin/contacts/{contactId}/handle',
+                request: {
+                    handled: 'boolean',
+                    adminNote: 'string',
+                },
                 response: {
-                    'result': 'string'
-                }
-            },
-            {
-                name: '却下',
-                method: 'POST',
-                path: '/internal/requests/{requestId}/reject',
-                response: {
-                    'result': 'string'
+                    contactId: 'int',
+                    handled: 'boolean',
+                    handledAt: 'ISO8601'
                 }
             }
         ],
@@ -421,7 +444,7 @@ export const adminModules: ModuleBaseData[] = [
         role: 'admin',
         name: '対応済みフラグの変更',
         description: '対応済みフラグをTrueにする',
-        relatedApi : 'AdminDisplayContactManagement',
+        relatedApi: 'AdminDisplayContactManagement',
     },
     {
         id: 'ProcessContactScreen',
@@ -434,9 +457,9 @@ export const adminModules: ModuleBaseData[] = [
         role: 'admin',
         name: 'ログアウトの選択',
         description: 'Webページでログアウトボタンをクリックする',
-        endpoint: {method: 'POST', path: '/auth/logout'},
+        endpoint: { method: 'POST', path: '/auth/logout' },
         response: {
-            'status' : 'logged_out',
+            'status': 'logged_out',
         }
     },
     {
